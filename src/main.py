@@ -1,7 +1,10 @@
+# Sam Heck, Student ID: 012082457
+
 import os
 import csv
 from utils import format_address, parse_delivery_deadline
 from Package import Package
+from Hash_Table import Hash_Table
 
 # Get file paths for data csv files
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -29,10 +32,11 @@ for i in range(0, len(distance_table_matrix)):
             distance_table_matrix[i][j] = distance_table_matrix[j][i]
 
 # open package csv file, parse and create package objects.
-packages = []
+packages = Hash_Table()
 with open(PACKAGE_FILE_PATH, newline='') as package_csvfile:
     package_stream = csv.reader(package_csvfile, delimiter=',', dialect='excel')
     for index, row in enumerate(package_stream):
         if index == 0: continue
-        package = Package(package_id=row[0], street_address=row[1], city=row[2], state=row[3], zip_code=row[4], delivery_deadline=parse_delivery_deadline(row[5]), weight_kg=row[6], special_notes=row[7])
-        packages.append(package)
+        key = int(row[0])
+        package = Package(package_id=key, street_address=row[1], city=row[2], state=row[3], zip_code=int(row[4]), delivery_deadline=parse_delivery_deadline(row[5]), weight_kg=int(row[6]), special_notes=row[7])
+        packages.insert(key, package)
