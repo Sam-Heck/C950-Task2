@@ -1,11 +1,12 @@
 import os
 import csv
-from utils import format_address
+from utils import format_address, parse_delivery_deadline
+from Package import Package
 
 # Get file paths for data csv files
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DISTANCE_CSV_PATH = os.path.join(PROJECT_ROOT, 'data', 'distance_table.csv')
-
+PACKAGE_FILE_PATH = os.path.join(PROJECT_ROOT, 'data', 'WGUPS_package_file.csv')
 
 # open distance table csv file, parse and import data into in-memory distance_table_matrix and associated address_index_map. This will store all distance table data as a 2d array with a map for associating an address with a matching row/column index in the distance_table_matrix.
 distance_table_matrix = []
@@ -21,8 +22,17 @@ with open(DISTANCE_CSV_PATH, newline='') as distance_csvfile:
             distances.append(row[i])
         distance_table_matrix.append(distances)
 
-# fill out other side of matrix since distance is same regardless of direction.
+# fill out empty side of matrix since distance is same regardless of direction.
 for i in range(0, len(distance_table_matrix)):
     for j in range(0, len(distance_table_matrix[i])):
         if distance_table_matrix[i][j] == '':
             distance_table_matrix[i][j] = distance_table_matrix[j][i]
+
+# open package csv file, parse and create package objects.
+packages = []
+with open(PACKAGE_FILE_PATH, newline='') as package_csvfile:
+    package_stream = csv.reader(package_csvfile, delimiter=',', dialect='excel')
+    for index, row in enumerate(package_stream):
+        if index == 0: continue
+        package = Package(package_id=row[0], street_address=row[1], city=row[2], state=row[3], zip_code=row[4], delivery_deadline=parse_delivery_deadline(row[5]), weight_kg=row[6], special_notes=row[7])
+        packages.append(package)
