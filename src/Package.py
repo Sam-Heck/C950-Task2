@@ -20,3 +20,12 @@ class Package:
 
     def set_status(self, status: PackageStatus):
         self.status = status
+
+    def __str__(self):
+        return (
+            f"Package ID: {self.package_id}\n"
+            f"Address: {self.street_address} {self.city}, {self.state} {self.zip_code}\n"
+            f"Delivery Deadline: {self.delivery_deadline}\n"
+            f"Package Weight: {self.weight_kg} kg\n"
+            f"Delivery Status: {self.status.value}"
+        )
