@@ -1,4 +1,4 @@
-class Hash_Table:
+class HashTable:
     def __init__(self):
         self.size = 8
         self.load_factor = 0.7
