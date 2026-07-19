@@ -1,5 +1,6 @@
 from enum import Enum
 import datetime
+from utils import format_address
 
 class PackageStatus(Enum):
     AT_HUB = 'at the hub'
@@ -20,6 +21,9 @@ class Package:
 
     def set_status(self, status: PackageStatus):
         self.status = status
+
+    def get_formatted_address(self):
+        return format_address(self.street_address, self.zip_code)
 
     def __str__(self):
         return (
