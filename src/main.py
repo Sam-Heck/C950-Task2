@@ -30,11 +30,14 @@ with open(DISTANCE_CSV_PATH, newline='') as distance_csvfile:
             distances.append(row[i])
         distance_table_matrix.append(distances)
 
-# fill out empty side of matrix since distance is same regardless of direction.
+# fill out empty side of matrix since distance is same regardless of direction and convert to floats
 for i in range(0, len(distance_table_matrix)):
     for j in range(0, len(distance_table_matrix[i])):
         if distance_table_matrix[i][j] == '':
+            distance_table_matrix[j][i] = float(distance_table_matrix[j][i]) #convert existing values to float before copying to other side of matrix
             distance_table_matrix[i][j] = distance_table_matrix[j][i]
+        else:
+            distance_table_matrix[i][j] = float(distance_table_matrix[i][j])
 
 # open package csv file, parse and create package objects.
 packages = HashTable()
@@ -43,7 +46,7 @@ with open(PACKAGE_FILE_PATH, newline='') as package_csvfile:
     for index, row in enumerate(package_stream):
         if index == 0: continue
         key = int(row[0])
-        package = Package(package_id=key, street_address=row[1], city=row[2], state=row[3], zip_code=int(row[4]), delivery_deadline=parse_delivery_deadline(row[5]), weight_kg=int(row[6]), special_notes=row[7])
+        package = Package(package_id=key, street_address=row[1], city=row[2], state=row[3], zip_code=row[4], delivery_deadline=parse_delivery_deadline(row[5]), weight_kg=int(row[6]), special_notes=row[7])
         packages.insert(key, package)
 
 ########## PACKAGE-TRUCK ASSIGNMENT ##########
@@ -62,14 +65,21 @@ with open(PACKAGE_FILE_PATH, newline='') as package_csvfile:
 # Truck 2 leaves when a driver returns
 # Truck 3 leaves at 9:05 
 
+# Potential grouping: 
+# truck_configs = [
+#     (1, [[15], [1, 13, 14, 16, 20, 29, 30, 31, 34, 37, 40], [19]], datetime.time(8, 0, 0)), # (13)
+#     (2, [3, 9, 18, 36, 38, 2, 4, 5, 7, 8, 10, 11, 12, 17], None), # (5 required) (Take 10 more flexible ones) (15)
+#     (3, [[6, 25], 28, 32, 21, 22, 23, 24, 26, 27, 33, 35, 39], datetime.time(9, 5, 0)) # (5 required) (Take 7 more flexible ones) (13)
+# ]
+
 truck_configs = [
-    (1, [[15], [1, 13, 14, 16, 20, 29, 30, 31, 34, 37, 40], [19]], datetime.time(8, 0, 0)), # (13)
-    (2, [3, 9, 18, 36, 38, 2, 4, 5, 7, 8, 10, 11, 12, 17], None), # (5 required) (Take 10 more flexible ones) (15)
-    (3, [[6, 25], 28, 32, 21, 22, 23, 24, 26, 27, 33, 35, 39], datetime.time(9, 5, 0)) # (5 required) (Take 7 more flexible ones) (13)
+    (1, [15, 1, 13, 14, 16, 20, 29, 30, 31, 34, 37, 40, 19], datetime.time(8, 0, 0)), # (13)
+    (2, [3, 9, 18, 36, 38, 2, 4, 5, 7, 8, 10, 11, 12, 17], None), # (5 required) (Take 9 more flexible ones) (14)
+    (3, [6, 25, 28, 32, 21, 22, 23, 24, 26, 27, 33, 35, 39], datetime.time(9, 5, 0)) # (5 required) (Take 7 more flexible ones) (13)
 ]
 
 # instantiate the 3 trucks and load package lists, set known departure times
-trucks = []
+trucks: list[Truck] = []
 for truck_id, id_list, departure_time in truck_configs:
     package_list = []
     for id in id_list:
@@ -77,8 +87,14 @@ for truck_id, id_list, departure_time in truck_configs:
     trucks.append(Truck(id=truck_id, packages=package_list, departure_time=departure_time))
 
 # build routes 
-for truck in trucks:
+for i, truck in enumerate(trucks):
     truck.set_route(nearest_neighbor(truck.get_package_list(), distance_table_matrix, address_index_map))
-
+    if truck.departure_time != None:
+        truck.calc_delivery_times()
+    # print(truck)
+    for package in truck.get_package_list():
+        if package.delivery_time != None and package.delivery_time > package.delivery_deadline:
+            print(f"Package late on truck {truck.id}\nPackage: {package}")
+# find whichever truck returns first and set that time to truck 2's departure time, if it's less than 10:20 set truck 2's departure time to 10:20. then call calc deliver times on truck 2. Status updates will occur in the cli interface when checking the status of packages
 
 # Build truck 2's route after one of the other trucks gets back and time is after 10:20 to ensure the wrong address for package 9 is updated. Also routes will likely need a start time to be built.

@@ -44,6 +44,8 @@ class HashTable:
         self.buckets = new_buckets
 
 
-    def remove(self, key):
-        pass
-        # decrement length
+    def __iter__(self):
+        for bucket in self.buckets:
+            if len(bucket) > 0:
+                for item in bucket:
+                    yield item[1]

@@ -3,15 +3,15 @@ from package import Package
 
 def nearest_neighbor(package_list: list[Package], distance_table, address_index_map):
     route = Route()
-    unvisited = list(package_list)
-    hub_address = "4001 South 700 East|84107"
+    unvisited = list(package_list) # Shallow copy of package list for iterating over and removing elements as they are added to the route list
+    hub_address = "4001 south 700 east|84107"
     current_address = hub_address
 
     # loop the length of unvisited. inside each loop, find the next closest package and save it to a variable.
     while len(unvisited) > 0:
         smallest_distance = float("inf")
-        closest_package = unvisited[0]
-        closest_package_index = 0
+        closest_package = None
+        closest_package_index = None
         for i, package in enumerate(unvisited):
             address = package.get_formatted_address()
             distance = distance_table[address_index_map[current_address]][address_index_map[address]]

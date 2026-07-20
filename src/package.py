@@ -13,23 +13,28 @@ class Package:
         self.street_address: str = street_address
         self.city: str = city
         self.state: str = state
-        self.zip_code: int = zip_code
+        self.zip_code: str = zip_code
         self.delivery_deadline: datetime.time = delivery_deadline
         self.weight_kg: int = weight_kg
         self.special_notes: str = special_notes
         self.status = PackageStatus.AT_HUB
+        self.delivery_time = None
 
     def set_status(self, status: PackageStatus):
         self.status = status
 
     def get_formatted_address(self):
         return format_address(self.street_address, self.zip_code)
+    
+    def set_delivery_time(self, time):
+        self.delivery_time = time
 
     def __str__(self):
         return (
             f"Package ID: {self.package_id}\n"
             f"Address: {self.street_address} {self.city}, {self.state} {self.zip_code}\n"
             f"Delivery Deadline: {self.delivery_deadline}\n"
+            f"Delivery Time: {self.delivery_time}\n"
             f"Package Weight: {self.weight_kg} kg\n"
             f"Delivery Status: {self.status.value}"
         )
