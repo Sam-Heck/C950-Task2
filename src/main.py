@@ -132,5 +132,3 @@ def print_route_summary(trucks: list[Truck]):
     print(f"Packages Overdue: {packages_overdue}")
 
 print_route_summary(trucks)
-
-
