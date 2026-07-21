@@ -1,13 +1,14 @@
 from package import Package
 from utils import add_time
 from route import RouteStop, Route
+from nearest_neighbor import nearest_neighbor
 
 class Truck:
     speed = 18
     def __init__(self, id, packages: list[Package], departure_time = None):
         self.id = id
         self.packages = packages
-        self.route: Route = None
+        self.route: Route = Route()
         self.departure_time = departure_time
         self.return_time = None
 
@@ -37,6 +38,9 @@ class Truck:
 
     def set_route(self, route):
         self.route = route
+
+    def build_route(self, distance_table, address_map):
+        self.set_route(nearest_neighbor(self.get_package_list(), distance_table, address_map))
 
     def calc_delivery_times(self):
             # loop through route list, at each loop calculate and set delivery time for that package. At each loop we will be on a RouteStop object which has the distance from last stop and so we will need to keep a running time that updates each loop. after we know the time it takes
