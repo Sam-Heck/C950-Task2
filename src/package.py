@@ -6,6 +6,7 @@ class PackageStatus(Enum):
     AT_HUB = 'at the hub'
     EN_ROUTE = 'en route'
     DELIVERED = 'delivered'
+    DELAYED = 'delayed'
 
 class Package:
     def __init__(self, package_id, street_address, city, state, zip_code, delivery_deadline, weight_kg, special_notes):

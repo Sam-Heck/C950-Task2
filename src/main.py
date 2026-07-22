@@ -61,13 +61,17 @@ with open(PACKAGE_FILE_PATH, newline='') as package_csvfile:
 # Truck 2 leaves when a driver returns
 # Truck 3 leaves at 9:05 
 
+# Set status of delayed packages to 'delayed'
+for package_id in [6, 25, 28, 32]:
+    package = packages.get(package_id).set_status(PackageStatus.DELAYED)
+
 current_time = datetime.time(8,0,0)
 wrong_address_fixed_time = datetime.time(10, 20, 0)
 
 truck_configs = [
     (1, [15, 1, 13, 14, 16, 20, 29, 30, 31, 34, 37, 40, 19, 33, 27], datetime.time(8, 0, 0)), # (13 required) (15)
     (2, [3, 9, 18, 36, 38, 2, 4, 5, 7, 8, 10, 11, 12, 17, 35, 39], None), # (5 required) (16)
-    (3, [6, 25, 28, 32, 21, 22, 23, 24, 26], datetime.time(9, 5, 0)) # (5 required) (9)
+    (3, [6, 25, 28, 32, 21, 22, 23, 24, 26], datetime.time(9, 5, 0)) # (4 required) (9)
 ]
 
 # instantiate the 3 trucks and load package lists, set known departure times
