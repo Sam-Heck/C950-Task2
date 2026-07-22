@@ -1,7 +1,7 @@
 class HashTable:
     def __init__(self):
         self.size = 8
-        self.load_factor = 0.7
+        self.max_load_factor = 0.7
         self.buckets = self._create_buckets(self.size)
         self.length = 0
 
@@ -28,7 +28,7 @@ class HashTable:
         bucket.append((key, value))
         self.length += 1
 
-        if self.length / self.size > self.load_factor: self._resize()
+        if self.length / self.size > self.max_load_factor: self._resize()
 
     def _resize(self):
         # create new buckets and save to local variable. loop through current buckets and re insert each item into new table. after point self.buckets to new table and double size property
